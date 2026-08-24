@@ -4,14 +4,13 @@
 
 The goal was to fine-tune `stabilityai/stable-diffusion-xl-base-1.0` to generate images in
 the Naruto anime art style, using the `lambdalabs/naruto-blip-captions` dataset, entirely
-within a free-tier Colab T4 GPU (~16GB VRAM) including at SDXL's native 1024x1024
+within Colab T4 GPU (~16GB VRAM) including at SDXL's native 1024x1024
 training resolution, which is the resolution the base model naively will not fit at without
 the optimizations described below.
 
 **Approach:** rather than full fine-tuning which requires storing gradients and optimizer
 state for all ~2.6B UNet parameters well beyond 16GB, the UNet is kept frozen and small
-low-rank adapters are trained on top of it. To use the limited ~5-hour Colab GPU budget
-efficiently, training is staged in two phases:
+low-rank adapters are trained on top of it. Training is staged in two phases:
 
 1. **Screening** — LoRA and DoRA, two hyperparameter variants each (rank 8 and rank 16), for
    a short 100 steps on a 200-example subset, at the real target resolution (so a memory
@@ -95,20 +94,7 @@ With the above stack in place, training proceeds directly at SDXL's native 1024x
 resolution rather than a reduced resolution, full fine-tuning cannot do this on a T4, but
 LoRA/DoRA-class adapters, combined with the memory techniques above, can.
 
-## 3. Motivation for these choices
-
-The guiding constraint was simple: **16GB is not enough for full fine-tuning of a 2.6B-
-parameter UNet at any reasonable batch size, and the free Colab GPU budget (~5 hours) is not
-enough to brute-force a large hyperparameter search.** Every technique above was chosen to
-address one of those two constraints directly:
-
-- LoRA/DoRA + 8-bit Adam + gradient checkpointing address the **memory** constraint at the
-  parameter/optimizer level.
-- fp16 + precompute-then-free + memory-efficient attention address the **memory** constraint
-  at the activation/intermediate-tensor level.
-- The **screen-then-commit training strategy** running short tests across several configurations and fully training only the best ones, helps address the time constraint. It avoids spending hours of limited free GPU time fully training configurations that a short run has already shown to be weaker.
-
-## 4. Results
+## 3. Results
 
 ### Screening (100 steps, 200-example subset, 1024x1024)
 
@@ -149,7 +135,7 @@ no meaningful benefit at this scale/resolution combination in our runs.
 
 **Effectiveness:** FID got much better (347.0 → 283.3, about an 18% decrease). This means the fine-tuned model's outputs became more similar to real Naruto-style images, showing that the model learned the target style. The CLIP score only dropped a little (31.4 → 30.9, about 1.4%). This is a small and expected trade-off when changing a general model to focus more on one specific style, while the model still follows prompts well.
 
-## 5. Repository contents
+## 4. Repository contents
 
 ```
 notebooks/
@@ -172,11 +158,3 @@ comparison_grid.png
 README.md
       This file.
 ```
-
-## 6. Known limitations
-
-- We kept the screening and hyperparameter testing small (2 settings for each method and 100 short training steps) because of the limited free GPU time. The results give us a general idea of which setting is better, not a complete search.
-
-- We tried QLoRA, but it is not included in the final results.
-
-- We used 600 steps for full training, which is not a lot for a dataset with around 1,037 images. The loss curves suggest that the model could improve more if we had more GPU time.
