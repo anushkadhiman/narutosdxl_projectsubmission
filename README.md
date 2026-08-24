@@ -50,7 +50,7 @@ The biggest improvement was the FID, which dropped by about **18%**. This indica
 
 The CLIP score only decreased by about **1.4%**, so prompt-following ability remained fairly stable.
 
-## 5. Main takeaway
+## 5. Conclusion
 
 The main result is that **LoRA and DoRA made it possible to fine-tune SDXL at its native 1024×1024 resolution on a 16 GB T4 GPU**.
 
