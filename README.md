@@ -165,11 +165,6 @@ notebooks/
 full_runs/
       Saved LoRA weights from the configs that were fully trained.
 
-screening_results.csv
-full_training_results.csv
-quantitative_evaluation.csv
-      Results from the training and evaluation.
-
 training_curves.png
 comparison_grid.png
       Training graphs and image comparisons.
