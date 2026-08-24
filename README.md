@@ -177,6 +177,6 @@ README.md
 
 - We kept the screening and hyperparameter testing small (2 settings for each method and 100 short training steps) because of the limited free GPU time. The results give us a general idea of which setting is better, not a complete search.
 
-- We tried QLoRA, but it is not included in the final results (see Section 2.7).
+- We tried QLoRA, but it is not included in the final results.
 
 - We used 600 steps for full training, which is not a lot for a dataset with around 1,037 images. The loss curves suggest that the model could improve more if we had more GPU time.
