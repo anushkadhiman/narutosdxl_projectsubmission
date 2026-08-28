@@ -4,7 +4,7 @@
 
 The goal was to fine-tune `stabilityai/stable-diffusion-xl-base-1.0` to generate images in a Naruto-style anime look. We used the `lambdalabs/naruto-blip-captions` dataset and trained everything on a Colab T4 GPU with 16 GB VRAM.
 
-Full fine-tuning was too memory-intensive, so we used **LoRA and DoRA**, which train only a small number of additional parameters while keeping the main UNet frozen.
+Full fine-tuning was too memory-intensive, so we used **LoRA, QLORA and DoRA**, which train only a small number of additional parameters while keeping the main UNet frozen.
 
 We first tested four configurations for 100 steps on 200 images, then trained the best LoRA and DoRA configurations for 600 steps on the full dataset.
 
